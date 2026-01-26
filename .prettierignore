@@ -1,0 +1,8 @@
+node_modules
+.wxt
+dist
+output
+*.min.js
+pnpm-lock.yaml
+package-lock.json
+yarn.lock
