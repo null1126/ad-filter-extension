@@ -12,6 +12,7 @@
     "zip": "wxt zip",
     "zip:firefox": "wxt zip -b firefox",
     "compile": "tsc --noEmit",
+    "prepare": "husky",
     "postinstall": "wxt prepare",
     "lint": "eslint .",
     "lint:fix": "eslint . --fix",
@@ -45,6 +46,23 @@
     "stylelint-config-prettier": "^9.0.5",
     "stylelint-order": "^6.0.4",
     "stylelint-config-recess-order": "^4.0.0",
-    "postcss-scss": "^4.0.0"
+    "postcss-scss": "^4.0.0",
+    "husky": "^9.1.7",
+    "lint-staged": "^15.4.3",
+    "@commitlint/cli": "^19.6.0",
+    "@commitlint/config-conventional": "^19.6.0"
+  },
+  "lint-staged": {
+    "*.{ts,tsx}": [
+      "eslint --fix",
+      "prettier --write"
+    ],
+    "*.{css,scss,sass}": [
+      "stylelint --fix",
+      "prettier --write"
+    ],
+    "*.{json,jsonc,md,html}": [
+      "prettier --write"
+    ]
   }
 }
