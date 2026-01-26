@@ -19,7 +19,9 @@
     "format": "prettier --write .",
     "format:check": "prettier --check .",
     "stylelint": "stylelint \"**/*.{css,scss,sass}\"",
-    "stylelint:fix": "stylelint \"**/*.{css,scss,sass}\" --fix"
+    "stylelint:fix": "stylelint \"**/*.{css,scss,sass}\" --fix",
+    "check": "pnpm run lint && pnpm run stylelint && pnpm run compile",
+    "commit": "pnpm run check && pnpm exec cz"
   },
   "dependencies": {
     "react": "^19.2.3",
@@ -50,7 +52,17 @@
     "husky": "^9.1.7",
     "lint-staged": "^15.4.3",
     "@commitlint/cli": "^19.6.0",
-    "@commitlint/config-conventional": "^19.6.0"
+    "@commitlint/config-conventional": "^19.6.0",
+    "commitizen": "^4.3.1",
+    "cz-customizable": "^7.0.0"
+  },
+  "config": {
+    "commitizen": {
+      "path": "./node_modules/cz-customizable"
+    },
+    "cz-customizable": {
+      "config": ".cz-config.cjs"
+    }
   },
   "lint-staged": {
     "*.{ts,tsx}": [

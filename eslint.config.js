@@ -20,6 +20,7 @@ export default tseslint.config(
       '**/output/**',
       '**/*.min.js',
       '.stylelintrc.cjs',
+      '.cz-config.cjs',
     ],
   },
   {
