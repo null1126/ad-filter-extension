@@ -1,0 +1,19 @@
+/* 百度广告过滤器 - 提前隐藏广告，避免闪烁 */
+.gp2k11k {
+  display: none !important;
+  height: 0 !important;
+  padding: 0 !important;
+  margin: 0 !important;
+  overflow: hidden !important;
+  visibility: hidden !important;
+}
+
+/* 通过属性选择器隐藏（当JavaScript添加data-baidu-ad-filtered属性时） */
+[data-baidu-ad-filtered='true'] {
+  display: none !important;
+  height: 0 !important;
+  padding: 0 !important;
+  margin: 0 !important;
+  overflow: hidden !important;
+  visibility: hidden !important;
+}
