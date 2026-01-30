@@ -14,6 +14,14 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Verify lockfile exists
+        run: |
+          echo "检查 lockfile..."
+          ls -la pnpm-lock.yaml || echo "pnpm-lock.yaml 不存在"
+          head -5 pnpm-lock.yaml || echo "无法读取 lockfile"
 
       - name: Setup pnpm
         uses: pnpm/action-setup@v4
