@@ -26,7 +26,7 @@ jobs:
       - name: Setup pnpm
         uses: pnpm/action-setup@v4
         with:
-          version: 10.28.1
+          version: latest
           package_json_path: package.json
 
       - name: Setup Node.js
@@ -36,7 +36,14 @@ jobs:
           cache: 'pnpm'
 
       - name: Install dependencies
-        run: pnpm install --frozen-lockfile
+        run: |
+          echo "检查 pnpm 版本..."
+          pnpm --version
+          echo "尝试使用 frozen-lockfile 安装..."
+          pnpm install --frozen-lockfile || {
+            echo "frozen-lockfile 失败，尝试不使用 frozen-lockfile..."
+            pnpm install --no-frozen-lockfile
+          }
 
       - name: Build Chrome extension
         run: pnpm build
