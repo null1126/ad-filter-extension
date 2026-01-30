@@ -188,6 +188,47 @@ chore: 构建/工具链更新
 4. 推送到分支 (`git push origin feature/AmazingFeature`)
 5. 开启 Pull Request
 
+## 🚀 发布流程
+
+### 自动化发布（推荐）
+
+项目已配置 GitHub Actions 自动化发布流程。当你推送版本 tag 时，会自动构建并创建 Release：
+
+```bash
+# 1. 更新版本号（可选，建议使用语义化版本）
+# 编辑 package.json 中的 version 字段
+
+# 2. 提交更改
+git add .
+git commit -m "chore: bump version to 1.0.0"
+
+# 3. 创建并推送版本 tag
+git tag v1.0.0
+git push origin v1.0.0
+
+# GitHub Actions 会自动：
+# - 构建 Chrome 和 Firefox 版本
+# - 打包为 zip 文件
+# - 创建 GitHub Release
+# - 上传构建产物
+```
+
+### 手动发布
+
+如果需要手动发布：
+
+```bash
+# 1. 构建扩展
+pnpm build          # Chrome 版本
+pnpm build:firefox  # Firefox 版本
+
+# 2. 打包扩展
+pnpm zip            # Chrome 版本
+pnpm zip:firefox    # Firefox 版本
+
+# 3. 在 GitHub 上手动创建 Release 并上传 .output/*.zip 文件
+```
+
 ## 📝 许可证
 
 本项目采用 MIT 许可证 - 查看 [LICENSE](LICENSE) 文件了解详情
