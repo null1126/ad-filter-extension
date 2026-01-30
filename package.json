@@ -2,7 +2,7 @@
   "name": "ad-filter",
   "description": "浏览器广告过滤插件，用于过滤浏览器搜索结果中的广告，支持启用/禁用过滤和查看广告数量",
   "private": true,
-  "version": "0.0.0",
+  "version": "1.0.0",
   "type": "module",
   "scripts": {
     "dev": "wxt",

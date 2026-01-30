@@ -1,0 +1,108 @@
+name: Build and Release
+
+on:
+  push:
+    tags:
+      - 'v*' # 当推送以 v 开头的 tag 时触发（如 v1.0.0）
+
+jobs:
+  build-and-release:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write # 需要写入权限来创建 Release
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Verify lockfile exists
+        run: |
+          echo "检查 lockfile..."
+          ls -la pnpm-lock.yaml || echo "pnpm-lock.yaml 不存在"
+          head -5 pnpm-lock.yaml || echo "无法读取 lockfile"
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: latest
+          package_json_path: package.json
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'pnpm'
+
+      - name: Install dependencies
+        run: |
+          echo "检查 pnpm 版本..."
+          pnpm --version
+          echo "尝试使用 frozen-lockfile 安装..."
+          pnpm install --frozen-lockfile || {
+            echo "frozen-lockfile 失败，尝试不使用 frozen-lockfile..."
+            pnpm install --no-frozen-lockfile
+          }
+
+      - name: Build Chrome extension
+        run: pnpm build
+
+      - name: Build Firefox extension
+        run: pnpm build:firefox
+
+      - name: Package Chrome extension
+        run: pnpm zip
+
+      - name: Package Firefox extension
+        run: pnpm zip:firefox
+
+      - name: Verify zip files
+        run: |
+          echo "验证 zip 文件..."
+          echo "=== .output 目录内容 ==="
+          ls -la .output/ || echo ".output 目录不存在"
+          echo ""
+          echo "=== 查找所有 zip 文件 ==="
+          find .output -name "*.zip" -type f || echo "未找到 zip 文件"
+          echo ""
+          ZIP_COUNT=$(find .output -name "*.zip" -type f 2>/dev/null | wc -l)
+          echo "找到 $ZIP_COUNT 个 zip 文件"
+          if [ "$ZIP_COUNT" -eq 0 ]; then
+            echo "错误: 未找到任何 zip 文件，构建可能失败"
+            exit 1
+          fi
+
+      - name: Get version from tag
+        id: get_version
+        run: echo "VERSION=${GITHUB_REF#refs/tags/}" >> $GITHUB_OUTPUT
+
+      - name: Create Release
+        uses: softprops/action-gh-release@v2
+        with:
+          files: |
+            .output/*.zip
+          name: Release ${{ steps.get_version.outputs.VERSION }}
+          body: |
+            ## 🎉 新版本发布
+
+            ### 下载
+            - **Chrome/Edge**: 下载 `ad-filter-chrome-mv3-*.zip` 文件
+            - **Firefox**: 下载 `ad-filter-firefox-mv2-*.zip` 文件
+
+            ### 安装说明
+            1. 下载对应浏览器的 zip 文件
+            2. 解压 zip 文件
+            3. 打开浏览器扩展管理页面
+               - Chrome/Edge: `chrome://extensions/`
+               - Firefox: `about:addons`
+            4. 启用"开发者模式"
+            5. 点击"加载已解压的扩展程序"
+            6. 选择解压后的文件夹
+
+            ### 更新内容
+            - 查看 [Commits](https://github.com/${{ github.repository }}/compare/${{ github.event.before }}...${{ github.sha }}) 了解详细变更
+          draft: false
+          prerelease: false
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
