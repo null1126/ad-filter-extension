@@ -41,6 +41,22 @@ jobs:
       - name: Package Firefox extension
         run: pnpm zip:firefox
 
+      - name: Verify zip files
+        run: |
+          echo "验证 zip 文件..."
+          echo "=== .output 目录内容 ==="
+          ls -la .output/ || echo ".output 目录不存在"
+          echo ""
+          echo "=== 查找所有 zip 文件 ==="
+          find .output -name "*.zip" -type f || echo "未找到 zip 文件"
+          echo ""
+          ZIP_COUNT=$(find .output -name "*.zip" -type f 2>/dev/null | wc -l)
+          echo "找到 $ZIP_COUNT 个 zip 文件"
+          if [ "$ZIP_COUNT" -eq 0 ]; then
+            echo "错误: 未找到任何 zip 文件，构建可能失败"
+            exit 1
+          fi
+
       - name: Get version from tag
         id: get_version
         run: echo "VERSION=${GITHUB_REF#refs/tags/}" >> $GITHUB_OUTPUT
